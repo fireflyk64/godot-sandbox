@@ -55,7 +55,7 @@ public:
 	// Po2 arena, and that mask is what the default relies on for its guard.
 	static constexpr unsigned MAX_VMEM = 32ul; // MBs
 	static constexpr unsigned MAX_HEAP_ALLOCS = 4000; // Max guest heap allocations
-	static constexpr unsigned MAX_LEVEL = 4; // Maximum call recursion depth
+	static constexpr unsigned MAX_LEVEL = 16; // Maximum call recursion depth (raised from 4 for udon2godot)
 	// Shared across MAX_LEVEL recursion levels.
 	static constexpr unsigned GUEST_STACK_SIZE = 2u << 20; // 2MB
 	static constexpr unsigned MAX_REFS = 100; // Default maximum number of references
