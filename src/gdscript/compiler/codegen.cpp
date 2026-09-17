@@ -3011,6 +3011,11 @@ void CodeGenerator::gen_for(const ForStmt* stmt, FunctionContext& func) {
 				IRValue::reg(array_reg));
 			set_register_type(func, snapshot_reg, Variant::STRING);
 			if (m_batch_iteration && !func.ir.is_coroutine) {
+				// The batched walk has its own loop context and scope. Leaving
+				// this one on the stack made a `break` that follows a nested
+				// loop jump to this loop's end label, which is never emitted.
+				pop_scope(func);
+				func.loops.pop_back();
 				gen_string_walk(stmt, snapshot_reg, func);
 				return;
 			}
@@ -3019,6 +3024,10 @@ void CodeGenerator::gen_for(const ForStmt* stmt, FunctionContext& func) {
 			array_reg = snapshot_reg;
 		}
 		if (m_batch_iteration && get_register_type(func, array_reg) == Variant::ARRAY) {
+			// See the String walk above: the context pushed here must not outlive
+			// the delegation.
+			pop_scope(func);
+			func.loops.pop_back();
 			gen_array_walk(stmt, array_reg, func, iterable_element, iterable_trait);
 			return;
 		}
